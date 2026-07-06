@@ -2,6 +2,11 @@
 
 Minimal GitHub-based sync flow for `Zed` config across your own machines.
 
+Tool split:
+
+- `git` handles local repository work: `add`, `commit`, `push`
+- `gh` handles GitHub access: auth, repo create, repo clone for private repos
+
 This repo is the public side of the setup:
 
 - public bootstrap script for `curl`
@@ -56,7 +61,7 @@ The export/install scripts can also be copied into your private `zed-config` rep
 
 1. Reads local Zed config from `~/.config/zed` or `~/.zed`
 2. Copies those files into `zed/` inside the private `zed-config` repo
-3. Optional: with `--push`, it also runs `git add zed`, `git commit`, and `git push`
+3. Optional: with `--push`, it also runs local `git add zed`, `git commit`, and `git push`
 
 ```text
 primary machine Zed config -> private zed-config repo/zed -> GitHub
@@ -79,6 +84,11 @@ GitHub private zed-config repo/zed -> local machine Zed config path
 3. Runs `install-zed-config.sh`
 4. Deletes the temp directory
 
+Short version:
+
+- `export` and `install` work on files and a local repo, so they use `git`
+- `bootstrap` needs GitHub auth to reach a private repo, so it uses `gh`
+
 ## Flow
 
 ### 1. Create The Private Config Repo
@@ -97,6 +107,11 @@ git push
 ```
 
 If you want, you can also copy `test-local-flow.sh` into that repo for local checks.
+
+Why `gh` here:
+
+- this step is about creating a GitHub repo
+- `gh repo create` is simpler than creating it manually in the browser
 
 ### 2. Export From The Primary Machine
 
@@ -127,7 +142,12 @@ What it does:
 
 1. Detects your Zed config directory
 2. Copies supported config into `./zed/`
-3. If you use `--push`, it also commits and pushes to the private repo
+3. If you use `--push`, it also uses local `git` to commit and push to the private repo's remote
+
+Why `git` here:
+
+- at this point you are already inside the local `zed-config` repo
+- the script is managing files in that repo, not creating or discovering repos on GitHub
 
 ## 3. Install On A New Machine
 
@@ -152,6 +172,11 @@ What it does:
 5. Backs up any existing local Zed config
 6. Copies the synced config into Zed's config path
 7. Deletes the temp directory
+
+Why `gh` here:
+
+- a plain `curl` script cannot directly read your private config repo
+- `gh` reuses your logged-in GitHub session to access that private repo cleanly
 
 If you want to force a specific config path:
 
@@ -221,3 +246,4 @@ It creates two temporary fake home directories, exports config from one, install
 - The bootstrap script is safe enough for self-use if you control the repo and the GitHub account.
 - `curl | bash` still means "run remote code", so keep the bootstrap script tiny and readable.
 - This repo gives you a stable flow, not account-level sync like VS Code.
+- If you feel confused about `git` vs `gh`, remember: `git` is for the repo on disk, `gh` is for GitHub.

@@ -23,6 +23,7 @@ while [ $# -gt 0 ]; do
     *)
       printf 'Unknown argument: %s\n' "$1" >&2
       printf 'Usage: %s [--push] [--message "commit message"]\n' "$(basename "$0")" >&2
+      printf 'This script uses local git because it works inside your checked-out zed-config repo.\n' >&2
       exit 1
       ;;
   esac
