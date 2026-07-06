@@ -38,7 +38,9 @@ current_user() {
 download_raw() {
   local name="$1"
   local dest="$2"
-  curl -fsSL "https://raw.githubusercontent.com/${kit_repo_slug}/${kit_ref}/${name}" -o "${dest}"
+  gh api \
+    -H "Accept: application/vnd.github.raw" \
+    "repos/${kit_repo_slug}/contents/${name}?ref=${kit_ref}" > "${dest}"
 }
 
 write_private_repo_scaffold() {
@@ -143,7 +145,6 @@ done
 
 require_cmd gh
 require_cmd git
-require_cmd curl
 require_cmd bash
 ensure_auth
 
