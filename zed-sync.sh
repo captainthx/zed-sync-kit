@@ -61,14 +61,21 @@ zed/.DS_Store
 EOF
 }
 
-clone_or_create_repo() {
+repo_exists() {
+  local repo_slug="$1"
+  gh repo view "${repo_slug}" >/dev/null 2>&1
+}
+
+clone_repo() {
   local repo_slug="$1"
   local repo_dir="$2"
 
-  if gh repo view "${repo_slug}" >/dev/null 2>&1; then
-    gh repo clone "${repo_slug}" "${repo_dir}" -- --depth=1 >/dev/null
-    return
-  fi
+  gh repo clone "${repo_slug}" "${repo_dir}" -- --depth=1 >/dev/null
+}
+
+create_repo() {
+  local repo_slug="$1"
+  local repo_dir="$2"
 
   gh repo create "${repo_slug}" --private >/dev/null
   mkdir -p "${repo_dir}"
@@ -158,11 +165,19 @@ repo_dir="${tmp_root}/repo"
 
 case "${command_name}" in
   init)
-    clone_or_create_repo "${repo_slug}" "${repo_dir}"
+    if repo_exists "${repo_slug}"; then
+      printf 'Ready: %s\n' "${repo_slug}"
+      exit 0
+    fi
+    create_repo "${repo_slug}" "${repo_dir}"
     printf 'Ready: %s\n' "${repo_slug}"
     ;;
   export)
-    clone_or_create_repo "${repo_slug}" "${repo_dir}"
+    if repo_exists "${repo_slug}"; then
+      clone_repo "${repo_slug}" "${repo_dir}"
+    else
+      create_repo "${repo_slug}" "${repo_dir}"
+    fi
     checkout_ref "${repo_dir}" "${repo_ref}"
     download_raw "export-zed-config.sh" "${repo_dir}/export-zed-config.sh"
     chmod +x "${repo_dir}/export-zed-config.sh"
@@ -173,7 +188,12 @@ case "${command_name}" in
     fi
     ;;
   install)
-    clone_or_create_repo "${repo_slug}" "${repo_dir}"
+    if ! repo_exists "${repo_slug}"; then
+      printf 'Missing repo: %s\n' "${repo_slug}" >&2
+      printf 'Run export on the primary machine first.\n' >&2
+      exit 1
+    fi
+    clone_repo "${repo_slug}" "${repo_dir}"
     checkout_ref "${repo_dir}" "${repo_ref}"
     download_raw "install-zed-config.sh" "${repo_dir}/install-zed-config.sh"
     chmod +x "${repo_dir}/install-zed-config.sh"

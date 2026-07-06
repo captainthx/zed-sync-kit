@@ -29,6 +29,7 @@ What that does:
 - `export` creates `current-gh-user/zed-config` automatically if it does not exist yet
 - `export` copies your Zed config and pushes it to that private repo
 - `install` pulls from that private repo and installs it locally
+- `install` expects that you already ran `export` at least once
 
 Tool split:
 

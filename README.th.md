@@ -29,6 +29,7 @@ curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sy
 - ถ้า `zed-config` ยังไม่มี `export` จะสร้าง repo private ให้เอง
 - `export` จะ copy config ของ Zed แล้ว push ขึ้น repo นั้น
 - `install` จะดึง config จาก repo นั้นมาลงเครื่องใหม่
+- `install` ใช้ได้หลังจากรัน `export` อย่างน้อยหนึ่งครั้งแล้ว
 
 การแบ่งหน้าที่ของเครื่องมือ:
 
