@@ -50,6 +50,35 @@ That split is the practical way to keep `curl` simple while keeping your config 
 The bootstrap script is the only file that must be public for the one-liner flow.
 The export/install scripts can also be copied into your private `zed-config` repo as-is.
 
+## Script Data Flow
+
+`export-zed-config.sh`
+
+1. Reads local Zed config from `~/.config/zed` or `~/.zed`
+2. Copies those files into `zed/` inside the private `zed-config` repo
+3. Optional: with `--push`, it also runs `git add zed`, `git commit`, and `git push`
+
+```text
+primary machine Zed config -> private zed-config repo/zed -> GitHub
+```
+
+`install-zed-config.sh`
+
+1. Reads `zed/` from the private `zed-config` repo
+2. Backs up the current machine's local Zed config
+3. Copies the synced files into the machine's Zed config path
+
+```text
+GitHub private zed-config repo/zed -> local machine Zed config path
+```
+
+`bootstrap-zed.sh`
+
+1. Downloads from the public `zed-sync-kit` repo
+2. Uses `gh` auth to clone the private `zed-config` repo into a temp directory
+3. Runs `install-zed-config.sh`
+4. Deletes the temp directory
+
 ## Flow
 
 ### 1. Create The Private Config Repo
@@ -81,11 +110,24 @@ git commit -m "Export Zed config"
 git push
 ```
 
+Or in one command:
+
+```bash
+cd /path/to/zed-config
+./export-zed-config.sh --push
+```
+
+Optional custom commit message:
+
+```bash
+./export-zed-config.sh --push --message "Update Zed config"
+```
+
 What it does:
 
 1. Detects your Zed config directory
 2. Copies supported config into `./zed/`
-3. Leaves Git to handle history and sync
+3. If you use `--push`, it also commits and pushes to the private repo
 
 ## 3. Install On A New Machine
 
@@ -142,6 +184,12 @@ You can override detection if needed:
 ```bash
 ZED_SOURCE_DIR=/custom/path ./export-zed-config.sh
 ZED_TARGET_DIR=/custom/path ./install-zed-config.sh
+```
+
+You can combine the source override with auto-push:
+
+```bash
+ZED_SOURCE_DIR=/custom/path ./export-zed-config.sh --push
 ```
 
 ## Example `settings.json` Snippet
