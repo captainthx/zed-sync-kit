@@ -4,6 +4,32 @@ English | [ภาษาไทย](./README.th.md)
 
 Minimal GitHub-based sync flow for `Zed` config across your own machines.
 
+## Fastest Flow
+
+Require `gh` first:
+
+```bash
+gh auth login
+```
+
+Primary machine, one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- export
+```
+
+New machine, one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- install
+```
+
+What that does:
+
+- `export` creates `current-gh-user/zed-config` automatically if it does not exist yet
+- `export` copies your Zed config and pushes it to that private repo
+- `install` pulls from that private repo and installs it locally
+
 Tool split:
 
 - `git` handles local repository work: `add`, `commit`, `push`
@@ -93,6 +119,53 @@ Short version:
 
 ## Flow
 
+### One-Liner Flow
+
+Create the private repo only if you want to do it explicitly:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- init
+```
+
+Export from the primary machine:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- export
+```
+
+Install on a new machine:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- install
+```
+
+Optional repo override:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- export --repo YOUR_USER/zed-config
+```
+
+Optional branch override for testing:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- export --repo YOUR_USER/zed-config --ref smoke-test
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- install --repo YOUR_USER/zed-config --ref smoke-test --target /tmp/zed-test
+```
+
+Optional custom source path:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- export --source /custom/zed/path
+```
+
+Optional custom install target:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- install --target /custom/zed/path
+```
+
+### Manual Flow
+
 ### 1. Create The Private Config Repo
 
 On any machine where `gh` is logged in:
@@ -163,6 +236,12 @@ Then run:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/YOUR_USER/zed-sync-kit/main/bootstrap-zed.sh | bash -s -- YOUR_USER/zed-config
+```
+
+Or the simpler one-liner:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/captainthx/zed-sync-kit/main/zed-sync.sh | bash -s -- install --repo YOUR_USER/zed-config
 ```
 
 What it does:

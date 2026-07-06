@@ -93,5 +93,6 @@ if [ "${push_after_export}" -eq 1 ]; then
   fi
 
   git -C "${repo_root}" commit -m "${commit_message}"
-  git -C "${repo_root}" push
+  current_branch="$(git -C "${repo_root}" branch --show-current)"
+  git -C "${repo_root}" push --set-upstream origin "${current_branch}"
 fi
