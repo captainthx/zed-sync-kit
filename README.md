@@ -111,6 +111,14 @@ What it does:
 6. Copies the synced config into Zed's config path
 7. Deletes the temp directory
 
+If you want to force a specific config path:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_USER/zed-sync-kit/main/bootstrap-zed.sh | bash -s -- YOUR_USER/zed-config /custom/zed/path
+```
+
+This is mostly useful for testing. In normal use you can omit the second argument.
+
 ## 4. Verify
 
 Open `Zed` and check:

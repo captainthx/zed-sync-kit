@@ -2,11 +2,12 @@
 set -euo pipefail
 
 if [ "${1:-}" = "" ]; then
-  printf 'Usage: bash bootstrap-zed.sh OWNER/REPO\n' >&2
+  printf 'Usage: bash bootstrap-zed.sh OWNER/REPO [ZED_TARGET_DIR]\n' >&2
   exit 1
 fi
 
 repo_slug="$1"
+target_dir="${2:-}"
 
 require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -27,4 +28,9 @@ tmp_root="$(mktemp -d)"
 trap 'rm -rf "${tmp_root}"' EXIT
 
 gh repo clone "${repo_slug}" "${tmp_root}/repo" -- --depth=1 >/dev/null
-bash "${tmp_root}/repo/install-zed-config.sh"
+
+if [ -n "${target_dir}" ]; then
+  ZED_TARGET_DIR="${target_dir}" bash "${tmp_root}/repo/install-zed-config.sh"
+else
+  bash "${tmp_root}/repo/install-zed-config.sh"
+fi
