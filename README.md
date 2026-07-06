@@ -1,5 +1,7 @@
 # Zed Sync Kit
 
+English | [ภาษาไทย](./README.th.md)
+
 Minimal GitHub-based sync flow for `Zed` config across your own machines.
 
 Tool split:
@@ -80,7 +82,7 @@ GitHub private zed-config repo/zed -> local machine Zed config path
 `bootstrap-zed.sh`
 
 1. Downloads from the public `zed-sync-kit` repo
-2. Uses `gh` auth to clone the private `zed-config` repo into a temp directory
+2. Uses `gh` auth to clone the private `zed-config` repo, optionally from a test branch, into a temp directory
 3. Runs `install-zed-config.sh`
 4. Deletes the temp directory
 
@@ -181,10 +183,18 @@ Why `gh` here:
 If you want to force a specific config path:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USER/zed-sync-kit/main/bootstrap-zed.sh | bash -s -- YOUR_USER/zed-config /custom/zed/path
+curl -fsSL https://raw.githubusercontent.com/YOUR_USER/zed-sync-kit/main/bootstrap-zed.sh | bash -s -- YOUR_USER/zed-config --target /custom/zed/path
 ```
 
 This is mostly useful for testing. In normal use you can omit the second argument.
+
+If you want to test from a separate branch first:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/YOUR_USER/zed-sync-kit/main/bootstrap-zed.sh | bash -s -- YOUR_USER/zed-config --ref smoke-test --target /tmp/zed-test
+```
+
+That lets you verify a branch before merging config changes into `main`.
 
 ## 4. Verify
 
