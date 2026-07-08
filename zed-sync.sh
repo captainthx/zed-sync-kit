@@ -51,9 +51,9 @@ write_private_repo_scaffold() {
   cat > "${repo_dir}/README.md" <<'EOF'
 # zed-config
 
-Private repo for Zed config shared across your own machines.
+Private repo for your shared Zed config.
 
-This repo is meant to be used by the public `zed-sync-kit` scripts.
+This repo is a data store used by zed-sync-kit.
 EOF
 
   cat > "${repo_dir}/.gitignore" <<'EOF'
@@ -180,6 +180,7 @@ case "${command_name}" in
     fi
     checkout_ref "${repo_dir}" "${repo_ref}"
     download_raw "export-zed-config.sh" "${repo_dir}/export-zed-config.sh"
+    download_raw "settings-sync.js" "${repo_dir}/settings-sync.js"
     chmod +x "${repo_dir}/export-zed-config.sh"
     if [ -n "${source_dir}" ]; then
       ZED_SOURCE_DIR="${source_dir}" bash "${repo_dir}/export-zed-config.sh" --push --message "${commit_message}"
@@ -196,6 +197,7 @@ case "${command_name}" in
     clone_repo "${repo_slug}" "${repo_dir}"
     checkout_ref "${repo_dir}" "${repo_ref}"
     download_raw "install-zed-config.sh" "${repo_dir}/install-zed-config.sh"
+    download_raw "settings-sync.js" "${repo_dir}/settings-sync.js"
     chmod +x "${repo_dir}/install-zed-config.sh"
     if [ -n "${target_dir}" ]; then
       ZED_TARGET_DIR="${target_dir}" bash "${repo_dir}/install-zed-config.sh"
