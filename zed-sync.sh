@@ -35,6 +35,17 @@ current_user() {
   gh api user --jq .login
 }
 
+auth_token() {
+  gh auth token
+}
+
+authenticated_remote_url() {
+  local repo_slug="$1"
+  local token
+  token="$(auth_token)"
+  printf 'https://x-access-token:%s@github.com/%s.git\n' "${token}" "${repo_slug}"
+}
+
 download_raw() {
   local name="$1"
   local dest="$2"
@@ -71,6 +82,7 @@ clone_repo() {
   local repo_dir="$2"
 
   gh repo clone "${repo_slug}" "${repo_dir}" -- --depth=1 >/dev/null
+  git -C "${repo_dir}" remote set-url origin "$(authenticated_remote_url "${repo_slug}")"
 }
 
 create_repo() {
@@ -81,7 +93,7 @@ create_repo() {
   mkdir -p "${repo_dir}"
   git -C "${repo_dir}" init >/dev/null
   git -C "${repo_dir}" branch -m main
-  git -C "${repo_dir}" remote add origin "https://github.com/${repo_slug}.git"
+  git -C "${repo_dir}" remote add origin "$(authenticated_remote_url "${repo_slug}")"
   write_private_repo_scaffold "${repo_dir}"
   git -C "${repo_dir}" add .
   git -C "${repo_dir}" commit -m "Initialize zed-config repo" >/dev/null
